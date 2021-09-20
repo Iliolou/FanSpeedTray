@@ -45,7 +45,7 @@ Window::Window()
     setIcon(0);
     trayIcon->installEventFilter(this);
     trayIcon->show();
-
+    setWindowTitle("FanSpeedTray");
     resize(390, 170); setFixedHeight(sizeHint().height()+30);
 }
 
@@ -218,7 +218,7 @@ void Window::setIcon(int index)
     QIcon icon = iconComboBox->itemIcon(index);
     trayIcon->setIcon(icon);
     setWindowIcon(icon);
-    setWindowTitle(tr(modetext.toUtf8() + " Settings"));
+    //setWindowTitle(tr(modetext.toUtf8() + " - " + tr("Settings"));
 
     if (mode==1 && fans.length()>1) fansComboBox->setVisible(true); else fansComboBox->setVisible(false);
     int fanno = fansComboBox->currentIndex();
