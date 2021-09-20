@@ -16,5 +16,5 @@ make install
 Mouse wheel: Increase/decrease fan speed / monitor brightness / keyboard backlight\
 Left click: Switch between fan, monitor and keyboard modes\
 Middle click: Turn off monitor. Once you use your mouse or keyboard, it will be turned on again\
-Right click: Content menu to exit the app\
+Right click: Context menu to exit the app\
 Double click: Select step and fan (if there are more than one)
