@@ -7,7 +7,7 @@ WARNING!!!: This applet allows manual fan speed control. It does not do any powe
 # Requirements
 Linux kernel that implements sysfs hardware monitoring.\
 For Dell you need kernel module **dell_smm_hwmon**, for ASUS you need **asus-nb-wmi** etc.\
-Check with:\
+Check with:
 ```console
    ~ # ls /sys/class/hwmon/hwmon*/pwm?_enable
 ```
