@@ -1,0 +1,9 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/">
+	<file>icons/fan.png</file>
+	<file>icons/brightness.png</file>
+	<file>icons/keyboard.png</file>
+	<file>icons/menuOptions.png</file>
+	<file>icons/menuQuit.png</file>
+</qresource>
+</RCC>

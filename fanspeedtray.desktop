@@ -1,0 +1,16 @@
+[Desktop Entry]
+Name=FanSpeedTray
+Version=1.0
+GenericName=Fan Speed Tray
+GenericName[el]=Fan Speed Tray
+Comment=Control fan speed, monitor brightness and keyboard backlight
+Comment[el]=Έλεγχος ανεμιστήρα, φωτεινότητας οθόνης και φωτισμού πληκτρολογίου
+Exec=fanspeedtray
+Icon=fanspeedtray
+Categories=System;
+Keywords=Fan;Brightness;Qt;
+Terminal=false
+Type=Application
+StartupWMClass=fanspeedtray
+X-Window-Icon=fanspeedtray
+X-SuSE-translate=true
