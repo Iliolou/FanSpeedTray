@@ -12,7 +12,8 @@
 #include <QPushButton>
 #include <QSpinBox>
 #include <QVBoxLayout>
-#include <QFileInfo>
+#include <QStandardItemModel>
+//#include <QFileInfo>
 //#include <QDebug>
 
 Window::Window()
@@ -91,11 +92,14 @@ void Window::getStatus()
     r = process->readAllStandardOutput(); r.chop(1);
     lines = r.split('\n');
 
+    if (r.isEmpty()) { status.append(1);status.append(1); } // no monitor brightness
+    else {
     for( int i=0; i<lines.count(); ++i ) {
 	if (i==0) { brightness = QString(lines[i]).remove("actual_"); }
 	else if ((i % 2) && (i<5)) { // get the first set
 		ccvalue = lines[i].toInt(&ok, 10); if (ok) status.append(ccvalue);
 	}
+    }
     }
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
@@ -110,15 +114,15 @@ void Window::getStatus()
     r = process->readAllStandardOutput(); r.chop(1);
     lines = r.split('\n');
 
-    if (r.isEmpty()) { status.append(1);status.append(1); } // no backlight
+    if (r.isEmpty()) { status.append(1);status.append(1); } // no keyboard backlight
     else keyboard = QString(lines[0]);
-    //for(const QByteArray& line : lines) {
     for( int i=1; i<lines.count(); i+=2 ) {
 	ccvalue = lines[i].toInt(&ok, 10); if (ok) status.append(ccvalue);
     }
 
     if (status.length()<6) { exit(0); }
-    QFileInfo bf(brightness); if (!bf.exists()) exit(0);
+    //QFileInfo bf(brightness); if (!bf.exists()) brightness="";
+    //QFileInfo kf(keyboard); if (!kf.exists()) keyboard="";
 
     autofans("1");
 
@@ -245,12 +249,22 @@ void Window::selectFan(int index)
 
 void Window::iconActivated(QSystemTrayIcon::ActivationReason reason)
 {
+    int val=-1;
+    bool bp = !brightness.isEmpty(), kp = !keyboard.isEmpty();
+    if (bp != kp) { //pseudo xor
+	if (kp) { val = 2*mode; } else { val = 2-mode; }
+    }
+
     switch (reason) {
     case QSystemTrayIcon::DoubleClick:
-	iconComboBox->setCurrentIndex((mode+1)%3);
-	setVisible(true); break;
+	setVisible(true);
+	if (bp && kp) val = (mode+1)%3;
+        if (val>-1) iconComboBox->setCurrentIndex(val);
+	break;
     case QSystemTrayIcon::Trigger:
-        iconComboBox->setCurrentIndex(mode); break;
+	if (bp && kp) val = mode;
+        if (val>-1) iconComboBox->setCurrentIndex(val);
+	break;
     case QSystemTrayIcon::MiddleClick:
         turnoffMonitor(); break;
     default:
@@ -309,9 +323,10 @@ void Window::showMessage()
     int v1 = current[1];
     int fanno = fansComboBox->currentIndex();
     if (mode==1 && fanno>0) v1 = extrafans[fanno-1];
-    QString report = tr("Fan Speed") + ": " + QString::number(v1) + "\n" +
-		tr("Monitor Brightness") + ": " + QString::number(current[2]) + "\n" +
-		tr("Keyboard Backlight") + ": " + QString::number(current[0]);
+    QString report = tr("Fan Speed") + ": " + QString::number(v1);
+   if (!brightness.isEmpty()) report.append("\n" + tr("Monitor Brightness") + ": " + QString::number(current[2]));
+   if (!keyboard.isEmpty()) report.append("\n" + tr("Keyboard Backlight") + ": " + QString::number(current[0]));
+
     trayIcon->showMessage(tr("Current values"), report, QSystemTrayIcon::Information, 8000);
 }
 
@@ -327,6 +342,16 @@ void Window::createIconGroupBox()
     iconComboBox->addItem(QIcon(":/icons/brightness.png"), tr("Monitor Brightness"));
     iconComboBox->addItem(QIcon(":/icons/keyboard.png"), tr("Keyboard Backlight"));
 
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(iconComboBox->model());
+    QStandardItem *item;
+    if (brightness.isEmpty()) {
+	item = model->item(1);
+	item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+    }
+    if (keyboard.isEmpty()) {
+	item = model->item(2);
+	item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+    }
 
     QHBoxLayout *iconLayout = new QHBoxLayout;
     //iconLayout->addStretch();
